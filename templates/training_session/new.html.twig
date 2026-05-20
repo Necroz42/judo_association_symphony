@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle session d'entraînement{% endblock %}
+
+{% block body %}
+    <h1>Créer une nouvelle session d'entraînement</h1>
+
+    {{ include('training_session/_form.html.twig') }}
+
+    <a href="{{ path('app_training_session_index') }}">
+        Retour à la liste
+    </a>
+{% endblock %}

@@ -6,11 +6,13 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -39,8 +41,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $firstName = null;
 
-    #[ORM\Column]
+    /*#[ORM\Column]
     private ?bool $Registration = null;
+    */
 
     /**
      * @var Collection<int, Activity>
@@ -54,10 +57,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Fight::class, inversedBy: 'users')]
     private Collection $fight;
 
+    #[ORM\Column]
+    private int $victories = 0;
+
     /**
      * @var Collection<int, Session>
      */
-    #[ORM\ManyToMany(targetEntity: Session::class, inversedBy: 'users')]
+    #[ORM\ManyToMany(targetEntity: TrainingSession::class, inversedBy: 'users')]
     private Collection $session;
 
     /**
@@ -173,7 +179,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function isRegistration(): ?bool
+    public function getFullName(): string
+    {
+        return $this->firstName.' '.$this->lastName;
+    }
+
+    /*public function isRegistration(): ?bool
     {
         return $this->Registration;
     }
@@ -183,7 +194,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->Registration = $Registration;
 
         return $this;
-    }
+    }*/
 
     /**
      * @return Collection<int, Activity>
@@ -236,6 +247,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getVictories(): int
+    {
+        return $this->victories;
+    }
+
+    public function setVictories(int $victories): self
+    {
+        $this->victories = $victories;
+        return $this;
+    }
+
     /**
      * @return Collection<int, Session>
      */
@@ -244,7 +266,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->session;
     }
 
-    public function addSession(Session $session): static
+    public function addSession(TrainingSession $session): static
     {
         if (!$this->session->contains($session)) {
             $this->session->add($session);
@@ -253,7 +275,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeSession(Session $session): static
+    public function removeSession(TrainingSession $session): static
     {
         $this->session->removeElement($session);
 

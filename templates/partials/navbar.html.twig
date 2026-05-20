@@ -1,0 +1,48 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container-fluid">
+
+        <a class="navbar-brand" href="{{ path('app_home') }}">
+            JUDO CLUB
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="nav">
+
+            <ul class="navbar-nav me-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_dashboard') }}">
+                        Accueil
+                    </a>
+                </li>
+
+                {% if is_granted('ROLE_MEMBER') %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_training_session_index') }}">
+                            Entraînements
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_fight_index') }}">
+                            Combats
+                        </a>
+                    </li>
+                {% endif %}
+
+            </ul>
+
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_logout') }}">
+                        Déconnexion
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</nav>

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\DocumentRepository;
+use App\Enum\DocumentType;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
@@ -13,8 +14,8 @@ class Document
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $type = null;
+    #[ORM\Column(enumType: DocumentType::class)]
+    private ?DocumentType $type = null;
 
     #[ORM\Column(length: 255)]
     private ?string $filePath = null;
@@ -28,12 +29,12 @@ class Document
         return $this->id;
     }
 
-    public function getType(): ?string
+    public function getType(): ?DocumentType
     {
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(DocumentType $type): static
     {
         $this->type = $type;
 

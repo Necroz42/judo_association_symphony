@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Session d'entraînement{% endblock %}
+
+{% block body %}
+    <h1>Session d'entraînement</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ trainingSession.id }}</td>
+            </tr>
+
+            <tr>
+                <th>Date de début</th>
+                <td>
+                    {{ trainingSession.startTime|date('H:i') }}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Date de fin</th>
+                <td>
+                    {{ trainingSession.endTime|date('H:i') }}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Lieu</th>
+                <td>{{ trainingSession.location }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_training_session_index') }}">
+        Retour à la liste
+    </a>
+
+    <a href="{{ path('app_training_session_edit', {'id': trainingSession.id}) }}">
+        Modifier
+    </a>
+
+    {{ include('training_session/_delete_form.html.twig') }}
+{% endblock %}

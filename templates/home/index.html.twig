@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+
+<div class="p-5 mb-5 bg-white rounded shadow-sm">
+
+    <h1 class="display-5">Association de Judo</h1>
+
+    <p class="text-muted mt-3">
+        Plateforme de gestion des entraînements, combats et adhérents.
+    </p>
+
+    <a class="btn btn-primary mt-3" href="{{ path('app_dashboard') }}">
+        Accéder au dashboard
+    </a>
+
+</div>
+
+<div class="row g-4">
+
+    <div class="col-md-4">
+        <div class="card p-4 h-100">
+
+            <h3>Sessions</h3>
+
+            <p class="text-muted">
+                Organisez et consultez les entraînements.
+            </p>
+
+            <a href="{{ path('app_training_session_index') }}" class="btn btn-outline-dark">
+                Voir les entraînements
+            </a>
+
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-4 h-100">
+
+            <h3>Combats</h3>
+
+            <p class="text-muted">
+                Suivi des combats et des résultats.
+            </p>
+
+            <a href="{{ path('app_fight_index') }}" class="btn btn-outline-dark">
+                Voir les combats
+            </a>
+
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-4 h-100">
+
+            <h3>Membres</h3>
+
+            <p class="text-muted">
+                Gestion des adhérents du club.
+            </p>
+
+            <a href="{{ path('app_dashboard') }}" class="btn btn-outline-dark">
+                Ouvrir le dashboard
+            </a>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

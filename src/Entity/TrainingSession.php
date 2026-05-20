@@ -2,68 +2,100 @@
 
 namespace App\Entity;
 
-use App\Repository\SessionRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Enum\TrainingSessionDay;
+use App\Repository\TrainingSessionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: SessionRepository::class)]
-class Session
+#[ORM\Entity(repositoryClass: TrainingSessionRepository::class)]
+class TrainingSession
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?\DateTime $startDate = null;
+    #[ORM\Column(type: 'json')]
+    private array $days = [];
 
-    #[ORM\Column]
-    private ?\DateTime $endDate = null;
+    #[ORM\Column(type: 'time')]
+    private ?\DateTimeInterface $startTime = null;
+
+    #[ORM\Column(type: 'time')]
+    private ?\DateTimeInterface $endTime = null;
 
     #[ORM\Column(length: 255)]
     private ?string $location = null;
 
-    #[ORM\ManyToOne(inversedBy: 'session')]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Activity $activity = null;
 
-    /**
-     * @var Collection<int, User>
-     */
-    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'session')]
-    private Collection $users;
-
-    public function __construct()
-    {
-        $this->users = new ArrayCollection();
-    }
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $coach = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getStartDate(): ?\DateTime
+    public function getDays(): array
     {
-        return $this->startDate;
+        return array_map(
+            fn(string $day) => TrainingSessionDay::from($day),
+            $this->days
+        );
     }
 
-    public function setStartDate(\DateTime $startDate): static
+    public function setDays(array $days): static
     {
-        $this->startDate = $startDate;
+        $this->days = array_map(
+            fn(TrainingSessionDay $day) => $day->value,
+            $days
+        );
 
         return $this;
     }
 
-    public function getEndDate(): ?\DateTime
+    public function addDay(TrainingSessionDay $day): static
     {
-        return $this->endDate;
+        if (!in_array($day->value, $this->days, true)) {
+            $this->days[] = $day->value;
+        }
+
+        return $this;
     }
 
-    public function setEndDate(\DateTime $endDate): static
+    public function removeDay(TrainingSessionDay $day): static
     {
-        $this->endDate = $endDate;
+        $this->days = array_filter(
+            $this->days,
+            fn($d) => $d !== $day->value
+        );
+
+        return $this;
+    }
+
+    public function getStartTime(): ?\DateTimeInterface
+    {
+        return $this->startTime;
+    }
+
+    public function setStartTime(\DateTimeInterface $startTime): static
+    {
+        $this->startTime = $startTime;
+
+        return $this;
+    }
+
+    public function getEndTime(): ?\DateTimeInterface
+    {
+        return $this->endTime;
+    }
+
+    public function setEndTime(\DateTimeInterface $endTime): static
+    {
+        $this->endTime = $endTime;
 
         return $this;
     }
@@ -92,29 +124,14 @@ class Session
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUsers(): Collection
+    public function getCoach(): ?User
     {
-        return $this->users;
+        return $this->coach;
     }
 
-    public function addUser(User $user): static
+    public function setCoach(?User $coach): static
     {
-        if (!$this->users->contains($user)) {
-            $this->users->add($user);
-            $user->addSession($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): static
-    {
-        if ($this->users->removeElement($user)) {
-            $user->removeSession($this);
-        }
+        $this->coach = $coach;
 
         return $this;
     }

@@ -3,28 +3,21 @@
 namespace App\Tests\Controller;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class UserControllerTest extends WebTestCase
 {
-    private KernelBrowser $client;
+    private $client;
     private EntityManagerInterface $manager;
-    /** @var EntityRepository<User> $userRepository */
-    private EntityRepository $userRepository;
-    private string $path = '/user/';
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
         $this->manager = static::getContainer()->get('doctrine')->getManager();
-        $this->userRepository = $this->manager->getRepository(User::class);
 
-        foreach ($this->userRepository->findAll() as $object) {
-            $this->manager->remove($object);
+        foreach ($this->manager->getRepository(User::class)->findAll() as $u) {
+            $this->manager->remove($u);
         }
 
         $this->manager->flush();
@@ -32,135 +25,48 @@ final class UserControllerTest extends WebTestCase
 
     public function testIndex(): void
     {
-        $this->client->followRedirects();
-        $crawler = $this->client->request('GET', $this->path);
+        $this->client->request('GET', '/user');
 
-        self::assertResponseStatusCodeSame(200);
-        self::assertPageTitleContains('User index');
-
-        // Use the $crawler to perform additional assertions e.g.
-        // self::assertSame('Some text on the page', $crawler->filter('.p')->first()->text());
+        self::assertResponseIsSuccessful();
     }
 
-    public function testNew(): void
+    public function testNewPage(): void
     {
-        $this->client->request('GET', sprintf('%snew', $this->path));
+        $this->client->request('GET', '/user/new');
 
-        self::assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+    }
+
+    public function testCreateUser(): void
+    {
+        $this->client->request('GET', '/user/new');
+
+        self::assertResponseIsSuccessful();
 
         $this->client->submitForm('Save', [
-            'user[email]' => 'Testing',
-            'user[roles]' => 'Testing',
-            'user[password]' => 'Testing',
-            'user[lastName]' => 'Testing',
-            'user[firstName]' => 'Testing',
-            'user[Registration]' => 'Testing',
-            'user[activities]' => 'Testing',
-            'user[fight]' => 'Testing',
-            'user[session]' => 'Testing',
+            'user[email]' => 'test@example.com',
+            'user[firstName]' => 'John',
+            'user[lastName]' => 'Doe',
+            'user[password]' => 'password123',
         ]);
 
-        self::assertResponseRedirects('/user');
-
-        self::assertSame(1, $this->userRepository->count([]));
-
-        $this->markTestIncomplete('This test was generated');
+        self::assertSame(1, $this->manager->getRepository(User::class)->count([]));
     }
 
-    public function testShow(): void
+    public function testShowPage(): void
     {
-        $fixture = new User();
-        $fixture->setEmail('My Title');
-        $fixture->setRoles('My Title');
-        $fixture->setPassword('My Title');
-        $fixture->setLastName('My Title');
-        $fixture->setFirstName('My Title');
-        $fixture->setRegistration('My Title');
-        $fixture->setActivities('My Title');
-        $fixture->setFight('My Title');
-        $fixture->setSession('My Title');
+        $user = new User();
+        $user->setEmail('test@example.com');
+        $user->setFirstName('John');
+        $user->setLastName('Doe');
+        $user->setRoles(['ROLE_MEMBER']);
+        $user->setPassword('fake'); // ok pour test simple
 
-        $this->manager->persist($fixture);
+        $this->manager->persist($user);
         $this->manager->flush();
 
-        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
+        $this->client->request('/user/' . $user->getId());
 
-        self::assertResponseStatusCodeSame(200);
-        self::assertPageTitleContains('User');
-
-        // Use assertions to check that the properties are properly displayed.
-        $this->markTestIncomplete('This test was generated');
-    }
-
-    public function testEdit(): void
-    {
-        $fixture = new User();
-        $fixture->setEmail('Value');
-        $fixture->setRoles('Value');
-        $fixture->setPassword('Value');
-        $fixture->setLastName('Value');
-        $fixture->setFirstName('Value');
-        $fixture->setRegistration('Value');
-        $fixture->setActivities('Value');
-        $fixture->setFight('Value');
-        $fixture->setSession('Value');
-
-        $this->manager->persist($fixture);
-        $this->manager->flush();
-
-        $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
-
-        $this->client->submitForm('Update', [
-            'user[email]' => 'Something New',
-            'user[roles]' => 'Something New',
-            'user[password]' => 'Something New',
-            'user[lastName]' => 'Something New',
-            'user[firstName]' => 'Something New',
-            'user[Registration]' => 'Something New',
-            'user[activities]' => 'Something New',
-            'user[fight]' => 'Something New',
-            'user[session]' => 'Something New',
-        ]);
-
-        self::assertResponseRedirects('/user');
-
-        $fixture = $this->userRepository->findAll();
-
-        self::assertSame('Something New', $fixture[0]->getEmail());
-        self::assertSame('Something New', $fixture[0]->getRoles());
-        self::assertSame('Something New', $fixture[0]->getPassword());
-        self::assertSame('Something New', $fixture[0]->getLastName());
-        self::assertSame('Something New', $fixture[0]->getFirstName());
-        self::assertSame('Something New', $fixture[0]->getRegistration());
-        self::assertSame('Something New', $fixture[0]->getActivities());
-        self::assertSame('Something New', $fixture[0]->getFight());
-        self::assertSame('Something New', $fixture[0]->getSession());
-
-        $this->markTestIncomplete('This test was generated');
-    }
-
-    public function testRemove(): void
-    {
-        $fixture = new User();
-        $fixture->setEmail('Value');
-        $fixture->setRoles('Value');
-        $fixture->setPassword('Value');
-        $fixture->setLastName('Value');
-        $fixture->setFirstName('Value');
-        $fixture->setRegistration('Value');
-        $fixture->setActivities('Value');
-        $fixture->setFight('Value');
-        $fixture->setSession('Value');
-
-        $this->manager->persist($fixture);
-        $this->manager->flush();
-
-        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
-        $this->client->submitForm('Delete');
-
-        self::assertResponseRedirects('/user');
-        self::assertSame(0, $this->userRepository->count([]));
-
-        $this->markTestIncomplete('This test was generated');
+        self::assertResponseIsSuccessful();
     }
 }

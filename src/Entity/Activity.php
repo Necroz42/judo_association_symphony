@@ -16,7 +16,7 @@ class Activity
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $title = null;
+    private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
@@ -30,7 +30,7 @@ class Activity
     /**
      * @var Collection<int, Session>
      */
-    #[ORM\OneToMany(targetEntity: Session::class, mappedBy: 'activity', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: TrainingSession::class, mappedBy: 'activity', orphanRemoval: true)]
     private Collection $session;
 
     /**
@@ -51,14 +51,14 @@ class Activity
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getName(): ?string
     {
-        return $this->title;
+        return $this->name;
     }
 
-    public function setTitle(string $title): static
+    public function setName(string $name): static
     {
-        $this->title = $title;
+        $this->name = $name;
 
         return $this;
     }
@@ -107,7 +107,7 @@ class Activity
         return $this->session;
     }
 
-    public function addSession(Session $session): static
+    public function addSession(TrainingSession $session): static
     {
         if (!$this->session->contains($session)) {
             $this->session->add($session);
@@ -117,7 +117,7 @@ class Activity
         return $this;
     }
 
-    public function removeSession(Session $session): static
+    public function removeSession(TrainingSession $session): static
     {
         if ($this->session->removeElement($session)) {
             // set the owning side to null (unless already changed)

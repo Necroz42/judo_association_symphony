@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sessions d'entraînement{% endblock %}
+
+{% block body %}
+    <h1>Séances d'entraînement</h1>
+    <p class="text-muted">
+        Organisez et consultez les entraînements.
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Activité</th>
+                <th>Heure</th>
+                <th>Jour</th>
+                <th>Lieu</th>
+                <th>Coach</th>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <th>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for session in trainingSessions %}
+            <tr>
+
+                <td>{{ session.activity.name }}</td>
+
+                <td>{{ session.startTime|date('H:i') }} - {{ session.endTime|date('H:i') }}</td>
+
+                <td>
+                    {% for day in session.days %}
+                        {{ day.value }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+
+                <td>{{ session.location }}</td>
+
+                <td>{{ session.coach.firstName }} {{ session.coach.lastName }}</td>
+
+                {% if is_granted('ROLE_ADMIN') %}  
+                    <td>
+                        <a href="{{ path('app_training_session_show', {'id': session.id}) }}">
+                            voir
+                        </a>
+
+                        <a href="{{ path('app_training_session_edit', {'id': session.id}) }}">
+                            modifier
+                        </a>
+                    </td>
+                {% endif %}
+
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">Aucune session trouvée</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_granted('ROLE_ADMIN') %}  
+        <a href="{{ path('app_training_session_new') }}">
+            Créer une nouvelle session
+        </a>
+    {% endif %}
+{% endblock %}

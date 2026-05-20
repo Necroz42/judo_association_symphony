@@ -38,6 +38,11 @@ class FightService
     public function setWinner(Fight $fight, User $winner): void
     {
         $fight->setWinner($winner);
+
+        $winner->setVictories(
+            $winner->getVictories() + 1
+        );
+
         $this->em->flush();
     }
 }

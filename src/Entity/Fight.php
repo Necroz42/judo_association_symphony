@@ -3,8 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\FightRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Enum\FightResult;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FightRepository::class)]
@@ -15,68 +14,68 @@ class Fight
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?\DateTime $date = null;
+    #[ORM\Column(type: "datetime")]
+    private ?\DateTimeInterface $date = null;
 
-    #[ORM\Column]
-    private ?int $opponent1 = null;
+    #[ORM\ManyToOne]
+    private ?User $opponent1 = null;
 
-    #[ORM\Column]
-    private ?int $opponent2 = null;
+    #[ORM\ManyToOne]
+    private ?User $opponent2 = null;
 
-    #[ORM\ManyToOne(inversedBy: 'fight')]
+    #[ORM\ManyToOne(inversedBy: 'fights')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Activity $activity = null;
 
-    /**
-     * @var Collection<int, User>
-     */
-    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'fight')]
-    private Collection $users;
-
-    public function __construct()
-    {
-        $this->users = new ArrayCollection();
-    }
+    #[ORM\Column(enumType: FightResult::class)]
+    private FightResult $result = FightResult::PENDING;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDate(): ?\DateTime
+    public function getDate(): ?\DateTimeInterface
     {
         return $this->date;
     }
 
-    public function setDate(\DateTime $date): static
+    public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
-
         return $this;
     }
 
-    public function getOpponent1(): ?int
+    public function getOpponent1(): ?User
     {
         return $this->opponent1;
     }
 
-    public function setOpponent1(int $opponent1): static
+    public function setOpponent1(?User $opponent1): static
     {
         $this->opponent1 = $opponent1;
-
         return $this;
     }
 
-    public function getOpponent2(): ?int
+    public function getOpponent2(): ?User
     {
         return $this->opponent2;
     }
 
-    public function setOpponent2(int $opponent2): static
+    public function setOpponent2(?User $opponent2): static
     {
         $this->opponent2 = $opponent2;
+        return $this;
+    }
 
+    public function getResult(): FightResult
+    {
+        return $this->result;
+    }
+
+    public function setResult(FightResult $result): self
+    {
+        $this->result = $result;
         return $this;
     }
 
@@ -88,34 +87,6 @@ class Fight
     public function setActivity(?Activity $activity): static
     {
         $this->activity = $activity;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
-
-    public function addUser(User $user): static
-    {
-        if (!$this->users->contains($user)) {
-            $this->users->add($user);
-            $user->addFight($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): static
-    {
-        if ($this->users->removeElement($user)) {
-            $user->removeFight($this);
-        }
-
         return $this;
     }
 }

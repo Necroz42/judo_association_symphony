@@ -11,24 +11,57 @@
                 <th>Id</th>
                 <td>{{ fight.id }}</td>
             </tr>
+
             <tr>
                 <th>Date</th>
-                <td>{{ fight.date ? fight.date|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    {{ fight.date ? fight.date|date('d/m/Y H:i') : '' }}
+                </td>
             </tr>
+
             <tr>
-                <th>Opponent1</th>
-                <td>{{ fight.opponent1 }}</td>
+                <th>Combattant 1</th>
+                <td>
+                    {{ fight.opponent1.firstName }} {{ fight.opponent1.lastName }}
+                </td>
             </tr>
+
             <tr>
-                <th>Opponent2</th>
-                <td>{{ fight.opponent2 }}</td>
+                <th>Combattant 2</th>
+                <td>
+                    {{ fight.opponent2.firstName }} {{ fight.opponent2.lastName }}
+                </td>
             </tr>
+
+            <tr>
+                <th>Résultat</th>
+                <td>
+                    {% if fight.result.value == 'pending' %}
+                        En attente
+
+                    {% elseif fight.result.value == 'opponent1' %}
+                        Victoire de {{ fight.opponent1.firstName }} {{ fight.opponent1.lastName }}
+
+                    {% elseif fight.result.value == 'opponent2' %}
+                        Victoire de {{ fight.opponent2.firstName }} {{ fight.opponent2.lastName }}
+
+                    {% elseif fight.result.value == 'draw' %}
+                        Égalité
+                    {% endif %}
+                </td>
+            </tr>
+
         </tbody>
     </table>
 
-    <a href="{{ path('app_fight_index') }}">back to list</a>
+    <a href="{{ path('app_fight_index') }}">
+        Retour à la liste
+    </a>
 
-    <a href="{{ path('app_fight_edit', {'id': fight.id}) }}">edit</a>
+    <a href="{{ path('app_fight_edit', {'id': fight.id}) }}">
+        Modifier
+    </a>
 
     {{ include('fight/_delete_form.html.twig') }}
+
 {% endblock %}
