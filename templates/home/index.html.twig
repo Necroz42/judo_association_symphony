@@ -4,70 +4,107 @@
 
 {% block body %}
 
-<div class="p-5 mb-5 bg-white rounded shadow-sm">
+<!-- HERO -->
+<section class="text-white py-5" style="background: #0b1b2b;">
+    <div class="container py-5">
 
-    <h1 class="display-5">Association de Judo</h1>
+        <div class="row align-items-center">
 
-    <p class="text-muted mt-3">
-        Plateforme de gestion des entraînements, combats et adhérents.
-    </p>
+            <h1>DOJO DE TIGERY</h1>
 
-    <a class="btn btn-primary mt-3" href="{{ path('app_dashboard') }}">
-        Accéder au dashboard
-    </a>
+            <div class="col-lg-7">
 
-</div>
+                <h1 class="display-4 fw-bold">
+                    PLUS QU’UN SPORT,<br>
+                    UNE <span style="color:#e63946;">ÉCOLE DE VIE</span>
+                </h1>
 
-<div class="row g-4">
+                <div class="mt-4 mb-4" style="width:80px; height:3px; background:#e63946;"></div>
 
-    <div class="col-md-4">
-        <div class="card p-4 h-100">
+                <p class="text-light">
+                    Politesse • Courage • Sincérité • Honneur • Modestie<br>
+                    Respect • Contrôle de soi • Amitié
+                </p>
 
-            <h3>Sessions</h3>
+                <a href="{{ path('app_dashboard') }}" class="btn btn-danger mt-4 px-4 py-2">
+                    REJOIGNEZ-NOUS
+                </a>
 
-            <p class="text-muted">
-                Organisez et consultez les entraînements.
-            </p>
+            </div>
 
-            <a href="{{ path('app_training_session_index') }}" class="btn btn-outline-dark">
-                Voir les entraînements
-            </a>
-
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card p-4 h-100">
-
-            <h3>Combats</h3>
-
-            <p class="text-muted">
-                Suivi des combats et des résultats.
-            </p>
-
-            <a href="{{ path('app_fight_index') }}" class="btn btn-outline-dark">
-                Voir les combats
-            </a>
+            <div class="col-lg-5 text-center">
+                <img src="{{ asset('images/judokas.jpg') }}" alt="Judokas" class="img-fluid rounded mt-2">
+                <small class="mb-0">Judo • Ju-jitsu • Taïso</small>
+            </div>
 
         </div>
+
     </div>
+</section>
 
-    <div class="col-md-4">
-        <div class="card p-4 h-100">
+<!-- SECTION INTRO -->
+<section class="py-5 bg-white">
+    <div class="container">
 
-            <h3>Membres</h3>
+        <h2 class="fw-bold mb-3">L’ESPRIT DU DOJO DE TIGERY</h2>
+        <div style="width:70px; height:3px; background:#e63946;" class="mb-4"></div>
 
-            <p class="text-muted">
-                Gestion des adhérents du club.
-            </p>
+        <p class="text">
+            Le Dojo de Tigery est un club d’arts martiaux dédié à la pratique du judo dans un cadre convivial et structuré.
+            Il accueille enfants, adolescents et adultes, du débutant au pratiquant confirmé.
+            L’enseignement met l’accent sur les valeurs fondamentales du judo : respect, discipline, courage et maîtrise de soi.
+            Le club propose des entraînements réguliers encadrés par des enseignants qualifiés, 
+            ainsi que des compétitions et événements pour favoriser la progression et l’esprit d’équipe.
+            Le Dojo de Tigery s’inscrit comme un lieu de développement sportif et personnel au sein de sa communauté.
+        </p>
 
-            <a href="{{ path('app_dashboard') }}" class="btn btn-outline-dark">
-                Ouvrir le dashboard
-            </a>
+        <p class="text-muted">
+            Ce site vous permet une gestion des entraînements, combats et adhérents.
+            Organisation des sessions, suivi des performances et gestion du club.
+        </p>
+
+    </div>
+</section>
+
+<!-- CARTES -->
+<section class="py-5 bg-light">
+    <div class="container">
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="card p-4 h-100 shadow-sm border-0">
+                    <h4>Accueil</h4>
+                    <p class="text-muted">Gestion globale du club.</p>
+                    <a href="{{ path('app_dashboard') }}" class="btn btn-outline-dark">
+                        Accéder
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card p-4 h-100 shadow-sm border-0">
+                    <h4>Entraînements</h4>
+                    <p class="text-muted">Organisation et suivi des sessions.</p>
+                    <a href="{{ path('app_training_session_index') }}" class="btn btn-outline-dark">
+                        Accéder
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card p-4 h-100 shadow-sm border-0">
+                    <h4>Combats</h4>
+                    <p class="text-muted">Résultats et historique des combats.</p>
+                    <a href="{{ path('app_fight_index') }}" class="btn btn-outline-dark">
+                        Accéder
+                    </a>
+                </div>
+            </div>
 
         </div>
-    </div>
 
-</div>
+    </div>
+</section>
 
 {% endblock %}

@@ -13,9 +13,7 @@
 
 <body>
 
-{% if app.user %}
-    {% include 'partials/navbar.html.twig' %}
-{% endif %}
+{% include 'partials/navbar.html.twig' %}
 
 <div class="container mt-4">
     {% block body %}{% endblock %}

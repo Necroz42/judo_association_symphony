@@ -44,12 +44,13 @@ security:
         # login public
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/home, roles: PUBLIC_ACCESS }
 
         # dashboard admin only
         - { path: ^/dashboard, roles: ROLE_MEMBER }
 
         # training + fights accessibles membres
-        - { path: ^/trainingSession, roles: ROLE_MEMBER }
+        - { path: ^/training-session, roles: ROLE_MEMBER }
         - { path: ^/fight, roles: ROLE_MEMBER }
 
 when@test:
