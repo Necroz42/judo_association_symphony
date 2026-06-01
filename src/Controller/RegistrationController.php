@@ -23,10 +23,13 @@ class RegistrationController extends AbstractController
         EntityManagerInterface $entityManager
     ): Response {
 
+        // Si déjà connecté → inutile de s'inscrire
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+
         $user = new User();
-
         $form = $this->createForm(RegistrationFormType::class, $user);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -41,6 +44,8 @@ class RegistrationController extends AbstractController
 
             $entityManager->persist($user);
             $entityManager->flush();
+
+            $this->addFlash('success', 'Compte créé avec succès.');
 
             return $security->login($user, AppAuthenticator::class, 'main');
         }

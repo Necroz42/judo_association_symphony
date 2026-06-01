@@ -33,8 +33,11 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->persist($user);
             $entityManager->flush();
+
+            $this->addFlash('success', 'Utilisateur créé avec succès.');
 
             return $this->redirectToRoute('app_user_index');
         }
@@ -48,6 +51,10 @@ final class UserController extends AbstractController
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user): Response
     {
+        if (!$user) {
+            throw $this->createNotFoundException('Utilisateur introuvable.');
+        }
+
         return $this->render('user/show.html.twig', [
             'user' => $user,
         ]);
@@ -59,11 +66,18 @@ final class UserController extends AbstractController
         User $user,
         EntityManagerInterface $entityManager
     ): Response {
+        if (!$user) {
+            throw $this->createNotFoundException('Utilisateur introuvable.');
+        }
+
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->flush();
+
+            $this->addFlash('success', 'Utilisateur modifié avec succès.');
 
             return $this->redirectToRoute('app_user_index');
         }
@@ -80,9 +94,18 @@ final class UserController extends AbstractController
         User $user,
         EntityManagerInterface $entityManager
     ): Response {
+        if (!$user) {
+            throw $this->createNotFoundException('Utilisateur introuvable.');
+        }
+
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->getString('_token'))) {
+
             $entityManager->remove($user);
             $entityManager->flush();
+
+            $this->addFlash('success', 'Utilisateur supprimé.');
+        } else {
+            $this->addFlash('danger', 'Token CSRF invalide.');
         }
 
         return $this->redirectToRoute('app_user_index');

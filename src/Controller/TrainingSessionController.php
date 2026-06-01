@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\TrainingSession;
 use App\Form\TrainingSessionType;
-use App\Service\TrainingSessionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,10 +14,10 @@ use Symfony\Component\Routing\Attribute\Route;
 final class TrainingSessionController extends AbstractController
 {
     #[Route(name: 'app_training_session_index', methods: ['GET'])]
-    public function index(TrainingSessionService $trainingSessionService): Response
+    public function index(EntityManagerInterface $entityManager): Response
     {
         return $this->render('training_session/index.html.twig', [
-            'trainingSessions' => $trainingSessionService->findAll(),
+            'trainingSessions' => $entityManager->getRepository(TrainingSession::class)->findAll(),
         ]);
     }
 
@@ -33,8 +32,11 @@ final class TrainingSessionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->persist($trainingSession);
             $entityManager->flush();
+
+            $this->addFlash('success', 'Session d’entraînement créée avec succès.');
 
             return $this->redirectToRoute('app_training_session_index');
         }
@@ -48,6 +50,10 @@ final class TrainingSessionController extends AbstractController
     #[Route('/{id}', name: 'app_training_session_show', methods: ['GET'])]
     public function show(TrainingSession $trainingSession): Response
     {
+        if (!$trainingSession) {
+            throw $this->createNotFoundException('Session introuvable.');
+        }
+
         return $this->render('training_session/show.html.twig', [
             'trainingSession' => $trainingSession,
         ]);
@@ -59,11 +65,18 @@ final class TrainingSessionController extends AbstractController
         TrainingSession $trainingSession,
         EntityManagerInterface $entityManager
     ): Response {
+        if (!$trainingSession) {
+            throw $this->createNotFoundException('Session introuvable.');
+        }
+
         $form = $this->createForm(TrainingSessionType::class, $trainingSession);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->flush();
+
+            $this->addFlash('success', 'Session modifiée avec succès.');
 
             return $this->redirectToRoute('app_training_session_index');
         }
@@ -80,9 +93,18 @@ final class TrainingSessionController extends AbstractController
         TrainingSession $trainingSession,
         EntityManagerInterface $entityManager
     ): Response {
-        if ($this->isCsrfTokenValid('delete' . $trainingSession->getId(), $request->request->get('_token'))) {
+        if (!$trainingSession) {
+            throw $this->createNotFoundException('Session introuvable.');
+        }
+
+        if ($this->isCsrfTokenValid('delete'.$trainingSession->getId(), $request->request->get('_token'))) {
+
             $entityManager->remove($trainingSession);
             $entityManager->flush();
+
+            $this->addFlash('success', 'Session supprimée.');
+        } else {
+            $this->addFlash('danger', 'Token CSRF invalide.');
         }
 
         return $this->redirectToRoute('app_training_session_index');

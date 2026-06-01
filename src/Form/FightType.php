@@ -44,10 +44,10 @@ class FightType extends AbstractType
 
             ->add('result', ChoiceType::class, [
                 'choices' => [
-                    'En attente' => FightResult::PENDING->value,
-                    "Victoire de $op1" => FightResult::OPPONENT1->value,
-                    "Victoire de $op2" => FightResult::OPPONENT2->value,
-                    'Égalité' => FightResult::DRAW->value,
+                    'En attente' => FightResult::PENDING,
+                    "Victoire de $op1" => FightResult::OPPONENT1,
+                    "Victoire de $op2" => FightResult::OPPONENT2,
+                    'Égalité' => FightResult::DRAW,
                 ],
             ])
 

@@ -23,17 +23,22 @@ final class DocumentController extends AbstractController
     }
 
     #[Route('/new', name: 'app_document_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, DocumentService $documentService): Response
-    {
+    public function new(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response {
         $document = new Document();
         $form = $this->createForm(DocumentType::class, $document);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->persist($document);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_document_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Document créé avec succès.');
+
+            return $this->redirectToRoute('app_document_index');
         }
 
         return $this->render('document/new.html.twig', [
@@ -45,21 +50,35 @@ final class DocumentController extends AbstractController
     #[Route('/{id}', name: 'app_document_show', methods: ['GET'])]
     public function show(Document $document): Response
     {
+        if (!$document) {
+            throw $this->createNotFoundException('Document introuvable.');
+        }
+
         return $this->render('document/show.html.twig', [
             'document' => $document,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_document_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Document $document, DocumentService $documentService): Response
-    {
+    public function edit(
+        Request $request,
+        Document $document,
+        EntityManagerInterface $entityManager
+    ): Response {
+        if (!$document) {
+            throw $this->createNotFoundException('Document introuvable.');
+        }
+
         $form = $this->createForm(DocumentType::class, $document);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_document_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Document modifié avec succès.');
+
+            return $this->redirectToRoute('app_document_index');
         }
 
         return $this->render('document/edit.html.twig', [
@@ -69,13 +88,25 @@ final class DocumentController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_document_delete', methods: ['POST'])]
-    public function delete(Request $request, Document $document, DocumentService $documentService): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$document->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($document);
-            $entityManager->flush();
+    public function delete(
+        Request $request,
+        Document $document,
+        EntityManagerInterface $entityManager
+    ): Response {
+        if (!$document) {
+            throw $this->createNotFoundException('Document introuvable.');
         }
 
-        return $this->redirectToRoute('app_document_index', [], Response::HTTP_SEE_OTHER);
+        if ($this->isCsrfTokenValid('delete'.$document->getId(), $request->getPayload()->getString('_token'))) {
+
+            $entityManager->remove($document);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Document supprimé.');
+        } else {
+            $this->addFlash('danger', 'Token CSRF invalide.');
+        }
+
+        return $this->redirectToRoute('app_document_index');
     }
 }

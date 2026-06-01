@@ -9,10 +9,12 @@ use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 final class DashboardController extends AbstractController
 {
     #[Route('/dashboard', name: 'app_dashboard')]
+    #[IsGranted('ROLE_MEMBER')]
     public function index(
         ActivityRepository $activityRepository,
         TrainingSessionRepository $trainingSessionRepository,
