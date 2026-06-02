@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\FightRepository;
 use App\Enum\FightResult;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,20 +16,30 @@ class Fight
     private ?int $id = null;
 
     #[ORM\Column(type: "datetime")]
+    #[Assert\NotNull]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\ManyToOne]
+    #[Assert\NotNull]
     private ?User $opponent1 = null;
 
     #[ORM\ManyToOne]
+    #[Assert\NotNull]
     private ?User $opponent2 = null;
 
     #[ORM\ManyToOne(inversedBy: 'fights')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Activity $activity = null;
 
     #[ORM\Column(enumType: FightResult::class)]
     private FightResult $result = FightResult::PENDING;
+
+    #[Assert\Expression(
+        "this.getOpponent1() != this.getOpponent2()",
+        message: "A fight must have two different opponents."
+    )]
+    private ?User $opponent2Validation = null;
 
     public function getId(): ?int
     {
